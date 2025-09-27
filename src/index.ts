@@ -2,9 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-// Mount compiled routes from dist so frontend API calls work in dev
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { router } = require('../dist/routes');
+import { router } from './routes';
 
 dotenv.config();
 
@@ -13,7 +11,7 @@ app.use(express.json());
 app.use(cors({ origin: true }));
 
 app.get('/health', (_req, res) => {
-  const state = mongoose.connection.readyState; // 0=disconnected,1=connected,2=connecting,3=disconnecting
+  const state = mongoose.connection.readyState;
   res.json({ ok: true, dbState: state });
 });
 
@@ -28,13 +26,11 @@ async function start() {
     console.error('MongoDB connection failed:', err);
   }
 
-  // API routes
   app.use('/api', router);
 
   app.listen(port, () => {
-    console.log(`Dev server listening on http://localhost:${port}`);
+    console.log(`Server listening on http://localhost:${port}`);
   });
 }
 
 start().catch((e) => console.error('Failed to start server', e));
-
